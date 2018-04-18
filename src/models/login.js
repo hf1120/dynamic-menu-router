@@ -1,6 +1,6 @@
 import { routerRedux } from 'dva/router';
 import { fakeAccountLogin } from '../services/api';
-import { setAuthority } from '../utils/authority';
+import { setToken, setTokenExpired } from '../utils/authority';
 import { reloadAuthorized } from '../utils/Authorized';
 
 export default {
@@ -47,7 +47,11 @@ export default {
 
   reducers: {
     changeLoginStatus(state, { payload }) {
-      setAuthority(payload.currentAuthority);
+      if (payload.data) {
+        setToken(payload.data);
+      } else {
+        setTokenExpired();
+      }
       return {
         ...state,
         status: payload.status,

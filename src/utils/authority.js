@@ -1,18 +1,37 @@
 // use localStorage to store the authority info, which might be sent from server in actual project.
 import store from '../index';
 
-/* 没有登录时guest, 登录是用户名 */
+/**
+ * 获取token
+ */
 export function getAuthority() {
-	return localStorage.getItem('antd-pro-authority') || 'admin';
+  const token = getToken();
+  // 判断token是否过期
+  if (!token) { return null; }
+  const nowTime = new Date() - 0;
+  if (token.expireIn > nowTime) { return token.token; }
+  return null;
 }
 
-export function setAuthority(authority) {
-  return localStorage.setItem('antd-pro-authority', authority);
+export function setToken(token) {
+  return localStorage.setItem('security.token', JSON.stringify(token));
+}
+
+export function getToken() {
+  const tokenStr = localStorage.getItem('security.token');
+  if (!tokenStr) { return null; }
+
+  const token = JSON.parse(tokenStr);
+  return token;
+}
+
+export function setTokenExpired() {
+  localStorage.removeItem('security.token');
 }
 
 /**
  * 判断是否有权限
- * @param {string} [authorityIdentity] 
+ * @param {string} [authorityIdentity]
  */
 export function hasPermission(authorityIdentity) {
   // 通用页面直接允许通过

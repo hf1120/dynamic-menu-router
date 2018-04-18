@@ -79,6 +79,7 @@ const proxy = {
         status: 'ok',
         type,
         currentAuthority: 'admin',
+        data: { token: 'abcdefg', expireIn: 2522162825873 },
       });
       return;
     }
@@ -87,6 +88,7 @@ const proxy = {
         status: 'ok',
         type,
         currentAuthority: 'user',
+        data: { token: 'abcdefg', expireIn: 2522162825873 },
       });
       return;
     }
