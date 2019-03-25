@@ -1,6 +1,6 @@
 ## dynamic-menu-router
 
-ant design pro动态路由权限，目前基于ant design pro1.4.4版本，只用于左侧菜单权限的设置，后续会有按钮权限的设置，以及最新版本权限的更新，敬请留意（演示请看demo列表）。
+ant design pro动态路由权限，目前基于ant design pro1.4.4版本，只用于左侧菜单权限的设置和按钮权限的设置，关于最新版本权限的更新，敬请留意（演示请看demo列表）。
 
 ## 对common中menu.js和router.js的拆分和组合(具体细节请参考代码)。
 
