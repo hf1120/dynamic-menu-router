@@ -195,6 +195,7 @@ class BasicLayout extends React.PureComponent {
                   exact={item.exact}
                   authority={() => hasPermission(item.identity)}
                   redirectPath="/exception/403"
+                  actions={item.actions}
                 />
               ))}
               <Redirect exact from="/" to={bashRedirect} />

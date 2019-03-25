@@ -146,6 +146,7 @@ export const menuData = [
         name: 'demo-one',
         path: 'demo-one',
         identity: 'demo.one',
+        actions: ['add', 'save'],
       },
       {
         name: 'demo-two',

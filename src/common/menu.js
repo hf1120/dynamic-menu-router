@@ -65,6 +65,7 @@ export const getRouterData = (routerConfig, menuData) => {
       name: router.name || menuItem.name,
       identity: router.identity || menuItem.identity,
       authority: router.authority || menuItem.authority,
+      actions: router.actions || menuItem.actions,
     };
     routerData[path] = router;
   });

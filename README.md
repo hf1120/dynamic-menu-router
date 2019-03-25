@@ -28,6 +28,10 @@ ant design pro动态路由权限，目前基于ant design pro1.4.4版本，只�
   
   重写utils/authority，这个主要用于权限的校验。
 
+  ## 按钮权限
+
+  menuData中增加actions数组，用于存放权限字段，demo-noe页面用于测试按钮权限
+
   ## 报错修改
 
   * 第一种：将node_modules/history/esm/history.js的esm换位es6即可
@@ -36,3 +40,8 @@ ant design pro动态路由权限，目前基于ant design pro1.4.4版本，只�
 ./node_modules/history/esm/history.js
 Module not found: Can't resolve '@babel/runtime/helpers/esm/extends'
 ```
+
+  ## 温馨提示
+
+  亲们，如果帮助到您了，请给个星（QQ群：805276584），-_-
+
