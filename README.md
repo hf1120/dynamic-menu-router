@@ -2,7 +2,7 @@
 
 ant design pro动态路由权限，目前基于ant design pro1.4.4版本，只用于左侧菜单权限的设置，后续会有按钮权限的设置，以及最新版本权限的更新，敬请留意。
 
-# 对common中menu.js和router.js的拆分和组合(具体细节请参考代码)。
+## 对common中menu.js和router.js的拆分和组合(具体细节请参考代码)。
 
   1.将menu.js中的menuData提取出去，暂时放在mock数据中（menuData.js），因为这些数据要用真实的接口来获取。
 
