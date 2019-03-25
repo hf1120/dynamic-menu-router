@@ -4,6 +4,7 @@ import { getActivities, getNotice, getFakeList } from './mock/api';
 import { getFakeChartData } from './mock/chart';
 import { getProfileBasicData } from './mock/profile';
 import { getProfileAdvancedData } from './mock/profile';
+import { menuData } from './mock/menuData';
 import { getNotices } from './mock/notices';
 import { format, delay } from 'roadhog-api-doc';
 
@@ -78,6 +79,7 @@ const proxy = {
         status: 'ok',
         type,
         currentAuthority: 'admin',
+        data: { token: 'abcdefg', expireIn: 2522162825873 },
       });
       return;
     }
@@ -86,6 +88,7 @@ const proxy = {
         status: 'ok',
         type,
         currentAuthority: 'user',
+        data: { token: 'abcdefg', expireIn: 2522162825873 },
       });
       return;
     }
@@ -135,6 +138,8 @@ const proxy = {
       path: '/base/category/list',
     });
   },
+  /* 自定义 */
+  'GET /api/menuData': menuData,
 };
 
 export default (noProxy ? {} : delay(proxy, 1000));

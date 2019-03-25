@@ -1,86 +1,37 @@
-import React, { createElement } from 'react';
-import { Spin } from 'antd';
-import pathToRegexp from 'path-to-regexp';
-import Loadable from 'react-loadable';
-import { getMenuData } from './menu';
+import { createElement } from 'react';
+import dynamic from 'dva/dynamic';
+// import pathToRegexp from 'path-to-regexp';
 
-let routerDataCache;
-
-const modelNotExisted = (app, model) =>
+let routerConfigCache;
+/**
+ * *
+ * @description 通过自定义的module是否存在于命名空间，不存在就require让它存在于命名空间中
+ * app._models就是所有的models  =>{effects, namespace, reducers, state, subscriptions}
+ *
+ */
+const modelNotExisted = (app, model) => {
   // eslint-disable-next-line
-  !app._models.some(({ namespace }) => {
+  return !app._models.some(({ namespace }) => {
     return namespace === model.substring(model.lastIndexOf('/') + 1);
-  });
-
-// wrapper of dynamic
-const dynamicWrapper = (app, models, component) => {
-  // register models
-  models.forEach(model => {
-    if (modelNotExisted(app, model)) {
-      // eslint-disable-next-line
-      app.model(require(`../models/${model}`).default);
-    }
-  });
-
-  // () => require('module')
-  // transformed by babel-plugin-dynamic-import-node-sync
-  if (component.toString().indexOf('.then(') < 0) {
-    return props => {
-      if (!routerDataCache) {
-        routerDataCache = getRouterData(app);
-      }
-      return createElement(component().default, {
-        ...props,
-        routerData: routerDataCache,
-      });
-    };
-  }
-  // () => import('module')
-  return Loadable({
-    loader: () => {
-      if (!routerDataCache) {
-        routerDataCache = getRouterData(app);
-      }
-      return component().then(raw => {
-        const Component = raw.default || raw;
-        return props =>
-          createElement(Component, {
-            ...props,
-            routerData: routerDataCache,
-          });
-      });
-    },
-    loading: () => {
-      return <Spin size="large" className="global-spin" />;
-    },
   });
 };
 
-function getFlatMenuData(menus) {
-  let keys = {};
-  menus.forEach(item => {
-    if (item.children) {
-      keys[item.path] = { ...item };
-      keys = { ...keys, ...getFlatMenuData(item.children) };
-    } else {
-      keys[item.path] = { ...item };
-    }
-  });
-  return keys;
-}
-
-export const getRouterData = app => {
+export const getRouterConfig = app => {
   const routerConfig = {
     '/': {
+      identity: 'root',
       component: dynamicWrapper(app, ['user', 'login'], () => import('../layouts/BasicLayout')),
     },
     '/dashboard/analysis': {
+      identity: 'common',
       component: dynamicWrapper(app, ['chart'], () => import('../routes/Dashboard/Analysis')),
     },
     '/dashboard/monitor': {
+      identity: 'common',
       component: dynamicWrapper(app, ['monitor'], () => import('../routes/Dashboard/Monitor')),
     },
     '/dashboard/workplace': {
+      identity: 'common',
       component: dynamicWrapper(app, ['project', 'activities', 'chart'], () =>
         import('../routes/Dashboard/Workplace')
       ),
@@ -89,119 +40,173 @@ export const getRouterData = app => {
       // authority: 'admin',
     },
     '/form/basic-form': {
+      identity: 'common',
       component: dynamicWrapper(app, ['form'], () => import('../routes/Forms/BasicForm')),
     },
     '/form/step-form': {
+      identity: 'common',
       component: dynamicWrapper(app, ['form'], () => import('../routes/Forms/StepForm')),
     },
     '/form/step-form/info': {
+      identity: 'common',
       name: '分步表单（填写转账信息）',
       component: dynamicWrapper(app, ['form'], () => import('../routes/Forms/StepForm/Step1')),
     },
     '/form/step-form/confirm': {
+      identity: 'common',
       name: '分步表单（确认转账信息）',
       component: dynamicWrapper(app, ['form'], () => import('../routes/Forms/StepForm/Step2')),
     },
     '/form/step-form/result': {
+      identity: 'common',
       name: '分步表单（完成）',
       component: dynamicWrapper(app, ['form'], () => import('../routes/Forms/StepForm/Step3')),
     },
     '/form/advanced-form': {
+      identity: 'common',
       component: dynamicWrapper(app, ['form'], () => import('../routes/Forms/AdvancedForm')),
     },
     '/list/table-list': {
+      identity: 'common',
       component: dynamicWrapper(app, ['rule'], () => import('../routes/List/TableList')),
     },
     '/list/basic-list': {
+      identity: 'common',
       component: dynamicWrapper(app, ['list'], () => import('../routes/List/BasicList')),
     },
     '/list/card-list': {
+      identity: 'common',
       component: dynamicWrapper(app, ['list'], () => import('../routes/List/CardList')),
     },
     '/list/search': {
+      identity: 'common',
       component: dynamicWrapper(app, ['list'], () => import('../routes/List/List')),
     },
     '/list/search/projects': {
+      identity: 'common',
       component: dynamicWrapper(app, ['list'], () => import('../routes/List/Projects')),
     },
     '/list/search/applications': {
+      identity: 'common',
       component: dynamicWrapper(app, ['list'], () => import('../routes/List/Applications')),
     },
     '/list/search/articles': {
+      identity: 'common',
       component: dynamicWrapper(app, ['list'], () => import('../routes/List/Articles')),
     },
     '/profile/basic': {
+      identity: 'common',
       component: dynamicWrapper(app, ['profile'], () => import('../routes/Profile/BasicProfile')),
     },
     '/profile/advanced': {
+      identity: 'common',
       component: dynamicWrapper(app, ['profile'], () =>
         import('../routes/Profile/AdvancedProfile')
       ),
     },
     '/result/success': {
+      identity: 'common',
       component: dynamicWrapper(app, [], () => import('../routes/Result/Success')),
     },
     '/result/fail': {
+      identity: 'common',
       component: dynamicWrapper(app, [], () => import('../routes/Result/Error')),
     },
     '/exception/403': {
+      identity: 'common',
       component: dynamicWrapper(app, [], () => import('../routes/Exception/403')),
     },
     '/exception/404': {
+      identity: 'common',
       component: dynamicWrapper(app, [], () => import('../routes/Exception/404')),
     },
     '/exception/500': {
+      identity: 'common',
       component: dynamicWrapper(app, [], () => import('../routes/Exception/500')),
     },
     '/exception/trigger': {
+      identity: 'common',
       component: dynamicWrapper(app, ['error'], () =>
         import('../routes/Exception/triggerException')
       ),
     },
+    // demo
+    '/demo/demo-one': {
+      component: dynamicWrapper(app, [], () => import('../routes/Demo/DemoOne')),
+    },
+    '/demo/demo-two': {
+      component: dynamicWrapper(app, [], () => import('../routes/Demo/DemoTwo')),
+    },
+    '/demo/demo-three': {
+      component: dynamicWrapper(app, [], () => import('../routes/Demo/DemoThree')),
+    },
     '/user': {
+      identity: 'common',
       component: dynamicWrapper(app, [], () => import('../layouts/UserLayout')),
     },
     '/user/login': {
+      identity: 'common',
       component: dynamicWrapper(app, ['login'], () => import('../routes/User/Login')),
     },
     '/user/register': {
+      identity: 'common',
       component: dynamicWrapper(app, ['register'], () => import('../routes/User/Register')),
     },
     '/user/register-result': {
+      identity: 'common',
       component: dynamicWrapper(app, [], () => import('../routes/User/RegisterResult')),
     },
-    // '/user/:id': {
-    //   component: dynamicWrapper(app, [], () => import('../routes/User/SomeComponent')),
-    // },
   };
-  // Get name from ./menu.js or just set it in the router data.
-  const menuData = getFlatMenuData(getMenuData());
 
-  // Route configuration data
-  // eg. {name,authority ...routerConfig }
-  const routerData = {};
-  // The route matches the menu
-  Object.keys(routerConfig).forEach(path => {
-    // Regular match item name
-    // eg.  router /user/:id === /user/chen
-    const pathRegexp = pathToRegexp(path);
-    const menuKey = Object.keys(menuData).find(key => pathRegexp.test(`${key}`));
-    let menuItem = {};
-    // If menuKey is not empty
-    if (menuKey) {
-      menuItem = menuData[menuKey];
-    }
-    let router = routerConfig[path];
-    // If you need to configure complex parameter routing,
-    // https://github.com/ant-design/ant-design-pro-site/blob/master/docs/router-and-nav.md#%E5%B8%A6%E5%8F%82%E6%95%B0%E7%9A%84%E8%B7%AF%E7%94%B1%E8%8F%9C%E5%8D%95
-    // eg . /list/:type/user/info/:id
-    router = {
-      ...router,
-      name: router.name || menuItem.name,
-      authority: router.authority || menuItem.authority,
-      hideInBreadcrumb: router.hideInBreadcrumb || menuItem.hideInBreadcrumb,
-    };
-    routerData[path] = router;
+  const { _store } = app;
+  _store.dispatch({
+    type: 'global/saveRouterConfig',
+    payload: routerConfig,
   });
-  return routerData;
+
+  return routerConfig;
 };
+
+// wrapper of dynamic
+function dynamicWrapper(app, models, component) {
+  // () => require('module')
+  if (component.toString().indexOf('.then(') < 0) {
+    models.forEach(model => {
+      // 动态设置请求，循环发送请求，如果没有请求就发送
+      if (modelNotExisted(app, model)) {
+        // eslint-disable-next-line
+        app.model(require(`../models/${model}`).default);
+      }
+    });
+    // props => { history, location, match, staticContext }
+    return props => {
+      if (!routerConfigCache) {
+        routerConfigCache = getRouterConfig(app);
+      }
+      return createElement(component().default, {
+        ...props,
+        routerConfig: routerConfigCache,
+      });
+    };
+  }
+  // () => import('module')
+  return dynamic({
+    app,
+    models: () =>
+      models.filter(model => modelNotExisted(app, model)).map(m => import(`../models/${m}`)),
+    // add routerData prop
+    component: () => {
+      if (!routerConfigCache) {
+        routerConfigCache = getRouterConfig(app);
+      }
+      return component().then(raw => {
+        const Component = raw.default || raw;
+        return props =>
+          createElement(Component, {
+            ...props,
+            routerConfig: routerConfigCache,
+          });
+      });
+    },
+  });
+}

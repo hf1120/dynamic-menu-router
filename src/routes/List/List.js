@@ -5,8 +5,9 @@ import { Input } from 'antd';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
 import { getRoutes } from '../../utils/utils';
 
-@connect()
-export default class SearchList extends Component {
+import AppMenu from '../../components/utils/AppMenu';
+
+class SearchList extends Component {
   handleTabChange = key => {
     const { dispatch, match } = this.props;
     switch (key) {
@@ -72,3 +73,5 @@ export default class SearchList extends Component {
     );
   }
 }
+
+export default connect()(AppMenu(SearchList));

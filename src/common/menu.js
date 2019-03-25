@@ -1,161 +1,7 @@
+import pathToRegexp from 'path-to-regexp';
 import { isUrl } from '../utils/utils';
 
-const menuData = [
-  {
-    name: 'dashboard',
-    icon: 'dashboard',
-    path: 'dashboard',
-    children: [
-      {
-        name: '分析页',
-        path: 'analysis',
-      },
-      {
-        name: '监控页',
-        path: 'monitor',
-      },
-      {
-        name: '工作台',
-        path: 'workplace',
-        // hideInBreadcrumb: true,
-        // hideInMenu: true,
-      },
-    ],
-  },
-  {
-    name: '表单页',
-    icon: 'form',
-    path: 'form',
-    children: [
-      {
-        name: '基础表单',
-        path: 'basic-form',
-      },
-      {
-        name: '分步表单',
-        path: 'step-form',
-      },
-      {
-        name: '高级表单',
-        authority: 'admin',
-        path: 'advanced-form',
-      },
-    ],
-  },
-  {
-    name: '列表页',
-    icon: 'table',
-    path: 'list',
-    children: [
-      {
-        name: '查询表格',
-        path: 'table-list',
-      },
-      {
-        name: '标准列表',
-        path: 'basic-list',
-      },
-      {
-        name: '卡片列表',
-        path: 'card-list',
-      },
-      {
-        name: '搜索列表',
-        path: 'search',
-        children: [
-          {
-            name: '搜索列表（文章）',
-            path: 'articles',
-          },
-          {
-            name: '搜索列表（项目）',
-            path: 'projects',
-          },
-          {
-            name: '搜索列表（应用）',
-            path: 'applications',
-          },
-        ],
-      },
-    ],
-  },
-  {
-    name: '详情页',
-    icon: 'profile',
-    path: 'profile',
-    children: [
-      {
-        name: '基础详情页',
-        path: 'basic',
-      },
-      {
-        name: '高级详情页',
-        path: 'advanced',
-        authority: 'admin',
-      },
-    ],
-  },
-  {
-    name: '结果页',
-    icon: 'check-circle-o',
-    path: 'result',
-    children: [
-      {
-        name: '成功',
-        path: 'success',
-      },
-      {
-        name: '失败',
-        path: 'fail',
-      },
-    ],
-  },
-  {
-    name: '异常页',
-    icon: 'warning',
-    path: 'exception',
-    children: [
-      {
-        name: '403',
-        path: '403',
-      },
-      {
-        name: '404',
-        path: '404',
-      },
-      {
-        name: '500',
-        path: '500',
-      },
-      {
-        name: '触发异常',
-        path: 'trigger',
-        hideInMenu: true,
-      },
-    ],
-  },
-  {
-    name: '账户',
-    icon: 'user',
-    path: 'user',
-    authority: 'guest',
-    children: [
-      {
-        name: '登录',
-        path: 'login',
-      },
-      {
-        name: '注册',
-        path: 'register',
-      },
-      {
-        name: '注册结果',
-        path: 'register-result',
-      },
-    ],
-  },
-];
-
+/* 格式化处理menuData中的所有path,如果children中没有authority，就用父级的覆盖 */
 function formatter(data, parentPath = '/', parentAuthority) {
   return data.map(item => {
     let { path } = item;
@@ -174,4 +20,56 @@ function formatter(data, parentPath = '/', parentAuthority) {
   });
 }
 
-export const getMenuData = () => formatter(menuData);
+/* 将menuData里面的数据展开  =>类似于router里面的routerConfig */
+export function getFlatMenuData(menusFormatterData) {
+  let keys = {};
+  menusFormatterData.forEach(item => {
+    if (item.children) {
+      keys[item.path] = { ...item };
+      keys = { ...keys, ...getFlatMenuData(item.children) };
+    } else {
+      keys[item.path] = { ...item };
+    }
+  });
+  return keys;
+}
+
+/**
+ * 将mune里面的menuData(name,authority)和routerConfig进行合并得出新的routerData
+ * get {name, authority} form getMenuData()
+ * return {name, authority, ...routerConfig}
+ *
+ * @author 何方
+ */
+export const getRouterData = (routerConfig, menuData) => {
+  // Route configuration data
+  // eg. {name,authority ...routerConfig }
+  const routerData = {};
+  // The route matches the menu
+  Object.keys(routerConfig).forEach(path => {
+    // Regular match item name
+    // eg.  router /user/:id === /user/chen
+    const pathRegexp = pathToRegexp(path);
+    const menuKey = Object.keys(menuData).find(key => pathRegexp.test(`${key}`));
+    let menuItem = {};
+    // If menuKey is not empty
+    if (menuKey) {
+      menuItem = menuData[menuKey];
+    }
+    let router = routerConfig[path];
+    // If you need to configure complex parameter routing,
+    // https://github.com/ant-design/ant-design-pro-site/blob/master/docs/router-and-nav.md#%E5%B8%A6%E5%8F%82%E6%95%B0%E7%9A%84%E8%B7%AF%E7%94%B1%E8%8F%9C%E5%8D%95
+    // eg . /list/:type/user/info/:id
+    router = {
+      ...router,
+      name: router.name || menuItem.name,
+      identity: router.identity || menuItem.identity,
+      authority: router.authority || menuItem.authority,
+    };
+    routerData[path] = router;
+  });
+
+  return routerData;
+};
+
+export const getMenuData = menuData => formatter(menuData);

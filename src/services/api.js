@@ -1,5 +1,8 @@
 import { stringify } from 'qs';
 import request from '../utils/request';
+import * as menuConfig from '../common/menu';
+
+import { menuData } from '../../mock/menuData';
 
 export async function queryProjectNotice() {
   return request('/api/project/notice');
@@ -76,4 +79,29 @@ export async function fakeRegister(params) {
 
 export async function queryNotices() {
   return request('/api/notices');
+}
+
+/* 自定义 */
+export async function getAuthMenus() {
+  return new Promise(resolve => {
+    resolve(menuConfig.getMenuData(menuData));
+  });
+}
+
+/* export async function getAuthMenus() {
+	return request('/api/menuData').then(function(datas){
+		return new Promise(function (resolve) {
+			resolve(menuConfig.getMenuData(datas));
+		});
+	});
+} */
+
+export async function getRouterData(routerConfig, menuDataTmp) {
+  const flatMenuData = menuConfig.getFlatMenuData(menuDataTmp);
+  return menuConfig.getRouterData(routerConfig, flatMenuData);
+}
+
+export function getRouterDataSync(routerConfig, menuDataTmp) {
+  const flatMenuData = menuConfig.getFlatMenuData(menuDataTmp);
+  return menuConfig.getRouterData(routerConfig, flatMenuData);
 }

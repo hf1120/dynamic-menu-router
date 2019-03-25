@@ -6,9 +6,11 @@ import NotFound from '../../Exception/404';
 import { getRoutes } from '../../../utils/utils';
 import styles from '../style.less';
 
+import AppMenu from '../../../components/utils/AppMenu';
+
 const { Step } = Steps;
 
-export default class StepForm extends PureComponent {
+class StepForm extends PureComponent {
   getCurrentStep() {
     const { location } = this.props;
     const { pathname } = location;
@@ -58,3 +60,5 @@ export default class StepForm extends PureComponent {
     );
   }
 }
+
+export default AppMenu(StepForm);
