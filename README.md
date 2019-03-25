@@ -8,13 +8,13 @@ ant design pro动态路由权限，目前基于ant design pro1.4.4版本，只�
 
   2.在router.js中getRouterConfig的底部增加以下代码。目的是将routerConfig对象通过reducer传入到models/global中备用。
   
----
+```
   // eslint-disable-next-line
   app._store.dispatch({
     type: 'global/saveRouterConfig',
     payload: routerConfig,
   });
----
+```
 
   3.将router.js中getFlatMenuData方法提取到menu.js中(getFlatMenuData:将数据处理为以路径为键的数据)。
 
