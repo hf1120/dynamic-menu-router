@@ -43,5 +43,5 @@ Module not found: Can't resolve '@babel/runtime/helpers/esm/extends'
 
   ## 温馨提示
 
-  亲们，如果帮助到您了，请给个星（QQ群：805276584），-_-
+  亲们，如果帮助到您了，请给个星，-_-
 
